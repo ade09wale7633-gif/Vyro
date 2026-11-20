@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(const VyroApp());
 
-const _ink = Color(0xFF101116);
-const _panel = Color(0xFF1A1B22);
-const _muted = Color(0xFF92939F);
-const _lime = Color(0xFFC7F36B);
+const _ink = Color(0xFF050505);
+const _panel = Color(0xFF121212);
+const _panel2 = Color(0xFF1B1B1B);
+const _gold = Color(0xFFFFD700);
+const _muted = Color(0xFFA7A7A7);
 
 class VyroApp extends StatelessWidget {
   const VyroApp({super.key});
@@ -13,20 +14,57 @@ class VyroApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Vyro',
+      title: 'Vyro Studio',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: _ink,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: _lime,
+          seedColor: _gold,
           brightness: Brightness.dark,
           surface: _panel,
         ),
         useMaterial3: true,
-        fontFamily: 'Roboto',
       ),
-      home: const HomeScreen(),
+      home: const VyroHome(),
+    );
+  }
+}
+
+class VyroHome extends StatefulWidget {
+  const VyroHome({super.key});
+
+  @override
+  State<VyroHome> createState() => _VyroHomeState();
+}
+
+class _VyroHomeState extends State<VyroHome> {
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final pages = [
+      const HomeScreen(),
+      const TemplatesScreen(),
+      const ProjectsScreen(),
+      const ProfileScreen(),
+    ];
+
+    return Scaffold(
+      body: pages[_index],
+      bottomNavigationBar: NavigationBar(
+        height: 72,
+        backgroundColor: _ink,
+        indicatorColor: _gold.withValues(alpha: 0.16),
+        selectedIndex: _index,
+        onDestinationSelected: (value) => setState(() => _index = value),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.auto_awesome_outlined), selectedIcon: Icon(Icons.auto_awesome), label: 'Templates'),
+          NavigationDestination(icon: Icon(Icons.folder_open_outlined), selectedIcon: Icon(Icons.folder_rounded), label: 'Projects'),
+          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
+        ],
+      ),
     );
   }
 }
@@ -36,140 +74,164 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: _lime,
-                      borderRadius: BorderRadius.circular(13),
-                    ),
-                    child: const Icon(Icons.cut_rounded, color: _ink),
-                  ),
-                  const SizedBox(width: 11),
-                  const Text('vyro', style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800, letterSpacing: -1)),
-                  const Spacer(),
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.settings_outlined), tooltip: 'Settings'),
-                  const CircleAvatar(radius: 18, backgroundColor: _panel, child: Icon(Icons.person_outline, size: 19)),
-                ],
-              ),
-              const SizedBox(height: 34),
-              const Text('Make something\nthat moves.', style: TextStyle(fontSize: 34, height: 1.05, fontWeight: FontWeight.w800, letterSpacing: -1.2)),
-              const SizedBox(height: 11),
-              const Text('Your stories, cut your way.', style: TextStyle(color: _muted, fontSize: 15)),
-              const SizedBox(height: 26),
-              SizedBox(
-                width: double.infinity,
-                height: 58,
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(backgroundColor: _lime, foregroundColor: _ink, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const EditorScreen())),
-                  icon: const Icon(Icons.add_rounded),
-                  label: const Text('New project', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                ),
-              ),
-              const SizedBox(height: 33),
-              Row(
-                children: [
-                  const Text('Recent projects', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                  const Spacer(),
-                  TextButton(onPressed: () {}, child: const Text('See all', style: TextStyle(color: _lime))),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: ListView(
-                  children: [
-                    _ProjectCard(onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const EditorScreen()))),
-                    const SizedBox(height: 12),
-                    const _EmptyProjectCard(),
-                  ],
-                ),
-              ),
-            ],
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(18, 14, 18, 24),
+        children: [
+          Row(children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(color: _gold, borderRadius: BorderRadius.circular(14)),
+              child: const Icon(Icons.play_arrow_rounded, color: _ink, size: 28),
+            ),
+            const SizedBox(width: 11),
+            const Text('VYRO', style: TextStyle(fontSize: 23, fontWeight: FontWeight.w900, letterSpacing: 3)),
+            const Spacer(),
+            IconButton(onPressed: () => _showSheet(context, 'Notifications', 'No new notifications'), icon: const Icon(Icons.notifications_none_rounded)),
+            IconButton(onPressed: () => _showSheet(context, 'Search', 'Search projects and templates'), icon: const Icon(Icons.search_rounded)),
+          ]),
+          const SizedBox(height: 28),
+          const Text('Create without limits', style: TextStyle(fontSize: 32, height: 1.05, fontWeight: FontWeight.w900, letterSpacing: -1.2)),
+          const SizedBox(height: 9),
+          const Text('Plans change quality. Creation is for everyone.', style: TextStyle(color: _muted, fontSize: 14)),
+          const SizedBox(height: 22),
+          SizedBox(
+            height: 58,
+            child: FilledButton.icon(
+              style: FilledButton.styleFrom(backgroundColor: _gold, foregroundColor: _ink, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditorScreen())),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('New project', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+            ),
           ),
-        ),
+          const SizedBox(height: 28),
+          const SectionTitle(title: 'Quick create'),
+          const SizedBox(height: 12),
+          Row(children: const [
+            Expanded(child: _QuickCard(icon: Icons.video_library_outlined, title: 'Import', color: Color(0xFF8057C8))),
+            SizedBox(width: 10),
+            Expanded(child: _QuickCard(icon: Icons.mic_none_rounded, title: 'Record', color: Color(0xFFB96A62))),
+            SizedBox(width: 10),
+            Expanded(child: _QuickCard(icon: Icons.auto_awesome_rounded, title: 'Aura', color: Color(0xFFD4A914))),
+          ]),
+          const SizedBox(height: 28),
+          const SectionTitle(title: 'Recent projects'),
+          const SizedBox(height: 12),
+          const _ProjectTile(title: 'Weekend moments', subtitle: 'Edited just now · 00:24', gradient: [Color(0xFF8067FF), Color(0xFFEC8A72), Color(0xFFFFC56B)]),
+          const SizedBox(height: 10),
+          const _ProjectTile(title: 'Nigerian skies', subtitle: 'Yesterday · 00:18', gradient: [Color(0xFF22546C), Color(0xFF73A79A), Color(0xFFD6B64C)]),
+        ],
       ),
-      bottomNavigationBar: const _HomeNavigation(),
     );
   }
 }
 
-class _ProjectCard extends StatelessWidget {
-  const _ProjectCard({required this.onTap});
-  final VoidCallback onTap;
+class SectionTitle extends StatelessWidget {
+  const SectionTitle({required this.title, super.key});
+  final String title;
 
   @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: onTap,
-      child: Ink(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(18)),
-        child: Row(
-          children: [
-            Container(
-              width: 76,
-              height: 76,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(13),
-                gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF8067FF), Color(0xFFEC8A72), Color(0xFFFFC56B)]),
-              ),
-              child: const Icon(Icons.play_arrow_rounded, size: 33, color: Colors.white),
-            ),
-            const SizedBox(width: 14),
-            const Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Weekend moments', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                SizedBox(height: 7),
-                Text('Edited just now  ·  00:24', style: TextStyle(color: _muted, fontSize: 12)),
-              ]),
-            ),
-            const Icon(Icons.more_horiz, color: _muted),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Row(children: [
+    Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+    const Spacer(),
+    TextButton(onPressed: () {}, child: const Text('See all', style: TextStyle(color: _gold))),
+  ]);
 }
 
-class _EmptyProjectCard extends StatelessWidget {
-  const _EmptyProjectCard();
+class _QuickCard extends StatelessWidget {
+  const _QuickCard({required this.icon, required this.title, required this.color});
+  final IconData icon;
+  final String title;
+  final Color color;
+
   @override
   Widget build(BuildContext context) => Container(
-    height: 92,
-    alignment: Alignment.center,
-    decoration: BoxDecoration(border: Border.all(color: Colors.white12), borderRadius: BorderRadius.circular(18)),
-    child: const Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.video_library_outlined, color: _muted, size: 19), SizedBox(width: 9), Text('Your next idea starts here', style: TextStyle(color: _muted))]),
+    height: 98,
+    decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(16)),
+    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Container(width: 44, height: 44, decoration: BoxDecoration(color: color.withValues(alpha: 0.18), shape: BoxShape.circle), child: Icon(icon, color: color)),
+      const SizedBox(height: 8),
+      Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+    ]),
   );
 }
 
-class _HomeNavigation extends StatelessWidget {
-  const _HomeNavigation();
+class _ProjectTile extends StatelessWidget {
+  const _ProjectTile({required this.title, required this.subtitle, required this.gradient});
+  final String title;
+  final String subtitle;
+  final List<Color> gradient;
+
   @override
-  Widget build(BuildContext context) => NavigationBar(
-    backgroundColor: _ink,
-    indicatorColor: const Color(0xFF30351F),
-    selectedIndex: 0,
-    destinations: const [
-      NavigationDestination(icon: Icon(Icons.home_rounded), label: 'Home'),
-      NavigationDestination(icon: Icon(Icons.auto_awesome_outlined), label: 'Templates'),
-      NavigationDestination(icon: Icon(Icons.folder_open_outlined), label: 'Projects'),
-    ],
+  Widget build(BuildContext context) => InkWell(
+    borderRadius: BorderRadius.circular(18),
+    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditorScreen())),
+    child: Ink(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(18)),
+      child: Row(children: [
+        Container(width: 76, height: 76, decoration: BoxDecoration(borderRadius: BorderRadius.circular(13), gradient: LinearGradient(colors: gradient)), child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 34)),
+        const SizedBox(width: 14),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)), const SizedBox(height: 7), Text(subtitle, style: const TextStyle(color: _muted, fontSize: 12))])),
+        const Icon(Icons.more_horiz, color: _muted),
+      ]),
+    ),
   );
+}
+
+class TemplatesScreen extends StatelessWidget {
+  const TemplatesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => SafeArea(child: ListView(padding: const EdgeInsets.all(18), children: [
+    const Text('Templates', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
+    const SizedBox(height: 16),
+    TextField(decoration: InputDecoration(hintText: 'Search templates', filled: true, fillColor: _panel, prefixIcon: const Icon(Icons.search), border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none))),
+    const SizedBox(height: 20),
+    ...['Cinematic', 'Social Reels', 'Celebration', 'Travel'].map((name) => Padding(padding: const EdgeInsets.only(bottom: 12), child: Container(height: 150, padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(18), border: Border.all(color: Colors.white10)), child: Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)), const SizedBox(height: 6), const Text('Original editable template', style: TextStyle(color: _muted))])), const Icon(Icons.arrow_forward_ios_rounded, color: _gold, size: 18)])))),
+  ]));
+}
+
+class ProjectsScreen extends StatelessWidget {
+  const ProjectsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => SafeArea(child: ListView(padding: const EdgeInsets.all(18), children: const [
+    Text('Projects', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
+    SizedBox(height: 18),
+    _ProjectTile(title: 'Weekend moments', subtitle: 'Draft · 00:24', gradient: [Color(0xFF8067FF), Color(0xFFEC8A72), Color(0xFFFFC56B)]),
+    SizedBox(height: 12),
+    _ProjectTile(title: 'Nigerian skies', subtitle: 'Draft · 00:18', gradient: [Color(0xFF22546C), Color(0xFF73A79A), Color(0xFFD6B64C)]),
+  ]));
+}
+
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => SafeArea(child: ListView(padding: const EdgeInsets.all(18), children: [
+    const CircleAvatar(radius: 38, backgroundColor: _gold, child: Icon(Icons.person_rounded, color: _ink, size: 42)),
+    const SizedBox(height: 12),
+    const Center(child: Text('Creator', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900))),
+    const SizedBox(height: 4),
+    const Center(child: Text('Guest mode', style: TextColorExtension.muted)),
+    const SizedBox(height: 26),
+    ...['Account', 'Privacy', 'Notifications', 'Storage', 'Export defaults', 'Help & legal'].map((name) => Card(color: _panel, margin: const EdgeInsets.only(bottom: 8), child: ListTile(leading: const Icon(Icons.chevron_right_rounded, color: _gold), title: Text(name), trailing: const Icon(Icons.chevron_right_rounded, size: 18)))),
+  ]));
+}
+
+void _showSheet(BuildContext context, String title, String message) {
+  showModalBottomSheet<void>(context: context, backgroundColor: _panel, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))), builder: (_) => Padding(padding: const EdgeInsets.all(24), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)), const SizedBox(height: 8), Text(message, style: const TextStyle(color: _muted))])));
+}
+
+class TextColorExtension {
+  static const TextStyle muted = TextStyle(color: _muted);
 }
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({super.key});
+
   @override
   State<EditorScreen> createState() => _EditorScreenState();
 }
@@ -178,116 +240,46 @@ class _EditorScreenState extends State<EditorScreen> {
   bool _playing = false;
   String _tool = 'Edit';
   double _position = 0.34;
-  final _tools = const [
-    (Icons.content_cut_rounded, 'Edit'),
-    (Icons.music_note_rounded, 'Audio'),
-    (Icons.title_rounded, 'Text'),
-    (Icons.auto_awesome_rounded, 'Effects'),
-    (Icons.filter_vintage_rounded, 'Filters'),
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final tools = const [('content_cut', 'Edit'), ('music_note', 'Audio'), ('title', 'Text'), ('auto_awesome', 'Effects'), ('filter_vintage', 'Filters')];
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: _ink,
         leading: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.arrow_back_rounded)),
-        title: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Weekend moments', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)), Text('1080p  ·  30 fps', style: TextStyle(fontSize: 11, color: _muted))]),
+        title: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Weekend moments', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)), Text('1080p · 30 fps', style: TextStyle(fontSize: 11, color: _muted))]),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.undo_rounded), tooltip: 'Undo'),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.redo_rounded), tooltip: 'Redo'),
-          Padding(padding: const EdgeInsets.only(right: 12), child: FilledButton(onPressed: () {}, style: FilledButton.styleFrom(backgroundColor: _lime, foregroundColor: _ink), child: const Text('Export', style: TextStyle(fontWeight: FontWeight.w800)))),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.undo_rounded)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.redo_rounded)),
+          Padding(padding: const EdgeInsets.only(right: 12), child: FilledButton(onPressed: () => _showSheet(context, 'Export', 'Export options will appear when a media pipeline is configured.'), style: FilledButton.styleFrom(backgroundColor: _gold, foregroundColor: _ink), child: const Text('Export'))),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(flex: 5, child: _preview()),
-          _transport(),
-          _timeline(),
-          _toolTray(),
-        ],
-      ),
+      body: Column(children: [
+        Expanded(flex: 5, child: Container(margin: const EdgeInsets.fromLTRB(18, 8, 18, 10), decoration: BoxDecoration(color: _panel2, borderRadius: BorderRadius.circular(18)), child: Stack(alignment: Alignment.center, children: [
+          Positioned.fill(child: ClipRRect(borderRadius: BorderRadius.circular(18), child: const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF534A78), Color(0xFFB36B62), Color(0xFFE2A765)])), child: Center(child: Icon(Icons.landscape_rounded, color: Colors.white54, size: 105))))),
+          Container(width: 52, height: 52, decoration: BoxDecoration(color: Colors.black54, shape: BoxShape.circle), child: IconButton(onPressed: () => setState(() => _playing = !_playing), icon: Icon(_playing ? Icons.pause_rounded : Icons.play_arrow_rounded))),
+          const Positioned(bottom: 12, right: 12, child: Text('PREVIEW', style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.4))),
+        ]))),
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 20), child: Row(children: [const Text('00:08.2', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)), const Text(' / 00:24.0', style: TextStyle(color: _muted, fontSize: 12)), const Spacer(), IconButton(onPressed: () {}, icon: const Icon(Icons.aspect_ratio_rounded, size: 20))])),
+        Container(height: 164, margin: const EdgeInsets.fromLTRB(16, 5, 16, 0), padding: const EdgeInsets.fromLTRB(12, 8, 12, 6), decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(16)), child: Column(children: [Row(children: [const Text('00:00', style: TextStyle(color: _muted, fontSize: 10)), Expanded(child: Slider(value: _position, onChanged: (value) => setState(() => _position = value), activeColor: _gold)), const Text('00:24', style: TextStyle(color: _muted, fontSize: 10))]), Expanded(child: Stack(children: [Column(children: [SizedBox(height: 54, child: Row(children: const [Expanded(child: _Clip(color: Color(0xFF8073B8), label: 'CLIP 01')), SizedBox(width: 3), Expanded(child: _Clip(color: Color(0xFFBA796A), label: 'CLIP 02')), SizedBox(width: 3), Expanded(child: _Clip(color: Color(0xFF8A9B68), label: 'CLIP 03'))])), const SizedBox(height: 8), Container(height: 28, decoration: BoxDecoration(color: const Color(0xFF253229), borderRadius: BorderRadius.circular(6)), child: const Row(children: [SizedBox(width: 8), Icon(Icons.graphic_eq_rounded, size: 16, color: _gold), SizedBox(width: 8), Text('MUSIC TRACK', style: TextStyle(fontSize: 10, color: _muted))]))]), Positioned(left: 103, top: 0, bottom: 0, child: Container(width: 2, color: _gold))]))]),
+        SizedBox(height: 92, child: ListView.separated(padding: const EdgeInsets.fromLTRB(12, 10, 12, 14), scrollDirection: Axis.horizontal, itemCount: tools.length, separatorBuilder: (_, __) => const SizedBox(width: 7), itemBuilder: (_, index) {
+          final label = tools[index].$2;
+          final selected = _tool == label;
+          final icons = [Icons.content_cut_rounded, Icons.music_note_rounded, Icons.title_rounded, Icons.auto_awesome_rounded, Icons.filter_vintage_rounded];
+          return InkWell(onTap: () => setState(() => _tool = label), borderRadius: BorderRadius.circular(14), child: Container(width: 70, decoration: BoxDecoration(color: selected ? _gold.withValues(alpha: 0.16) : _panel, borderRadius: BorderRadius.circular(14), border: selected ? Border.all(color: _gold) : null), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icons[index], color: selected ? _gold : _muted, size: 21), const SizedBox(height: 6), Text(label, style: TextStyle(fontSize: 11, color: selected ? _gold : _muted))])));
+        }),
+      ]),
     );
   }
+}
 
-  Widget _preview() => Container(
-    width: double.infinity,
-    margin: const EdgeInsets.fromLTRB(18, 8, 18, 10),
-    decoration: BoxDecoration(color: const Color(0xFF23242B), borderRadius: BorderRadius.circular(18)),
-    child: Stack(
-      alignment: Alignment.center,
-      children: [
-        Positioned.fill(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(18),
-            child: DecoratedBox(
-              decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF534A78), Color(0xFFB36B62), Color(0xFFE2A765)])),
-              child: Stack(children: [
-                Positioned(right: -40, top: 28, child: _orb(150, const Color(0xFFFFD18B).withValues(alpha: .5))),
-                Positioned(left: -30, bottom: 20, child: _orb(120, const Color(0xFFB8A7FF).withValues(alpha: .45))),
-                const Center(child: Icon(Icons.landscape_rounded, color: Colors.white54, size: 105)),
-              ]),
-            ),
-          ),
-        ),
-        Container(width: 52, height: 52, decoration: BoxDecoration(color: Colors.black.withValues(alpha: .36), shape: BoxShape.circle), child: IconButton(onPressed: () => setState(() => _playing = !_playing), icon: Icon(_playing ? Icons.pause_rounded : Icons.play_arrow_rounded, size: 30, color: Colors.white))),
-        const Positioned(bottom: 12, right: 12, child: Text('PREVIEW', style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1.4))),
-      ],
-    ),
-  );
+class _Clip extends StatelessWidget {
+  const _Clip({required this.color, required this.label});
+  final Color color;
+  final String label;
 
-  Widget _orb(double size, Color color) => Container(width: size, height: size, decoration: BoxDecoration(color: color, shape: BoxShape.circle));
-
-  Widget _transport() => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-    child: Row(children: [
-      const Text('00:08.2', style: TextStyle(fontFeatures: [], fontSize: 13, fontWeight: FontWeight.w700)),
-      const Text('  /  00:24.0', style: TextStyle(color: _muted, fontSize: 12)),
-      const Spacer(),
-      IconButton(onPressed: () {}, icon: const Icon(Icons.aspect_ratio_rounded, size: 20), tooltip: 'Canvas ratio'),
-      IconButton(onPressed: () {}, icon: const Icon(Icons.fullscreen_rounded, size: 20), tooltip: 'Full screen'),
-    ]),
-  );
-
-  Widget _timeline() => Container(
-    height: 164,
-    margin: const EdgeInsets.fromLTRB(16, 5, 16, 0),
-    padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
-    decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(16)),
-    child: Column(children: [
-      Row(children: [const Text('00:00', style: TextStyle(color: _muted, fontSize: 10)), Expanded(child: Slider(value: _position, onChanged: (v) => setState(() => _position = v), activeColor: _lime, inactiveColor: Colors.white12)), const Text('00:24', style: TextStyle(color: _muted, fontSize: 10))]),
-      Expanded(child: Stack(children: [
-        Column(children: [
-          SizedBox(height: 54, child: Row(children: [
-            _clip(const Color(0xFF8073B8), 'CLIP 01'), const SizedBox(width: 3), _clip(const Color(0xFFBA796A), 'CLIP 02'), const SizedBox(width: 3), _clip(const Color(0xFF8A9B68), 'CLIP 03'),
-            Container(width: 28, height: 48, decoration: BoxDecoration(color: const Color(0xFF252630), borderRadius: BorderRadius.circular(6)), child: const Icon(Icons.add, size: 17, color: _muted)),
-          ])),
-          const SizedBox(height: 8),
-          Container(height: 28, decoration: BoxDecoration(color: const Color(0xFF253229), borderRadius: BorderRadius.circular(6)), child: const Row(children: [SizedBox(width: 8), Icon(Icons.graphic_eq_rounded, size: 15, color: _lime), SizedBox(width: 6), Text('Original audio', style: TextStyle(color: _lime, fontSize: 10)), Spacer(), Icon(Icons.more_horiz, size: 16, color: _lime), SizedBox(width: 7)])),
-        ]),
-        Positioned(left: 103, top: 0, bottom: 0, child: Container(width: 2, color: _lime)),
-      ])),
-    ]),
-  );
-
-  Widget _clip(Color color, String label) => Expanded(child: Container(height: 48, alignment: Alignment.centerLeft, padding: const EdgeInsets.symmetric(horizontal: 6), decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(6)), child: Row(children: [const Icon(Icons.image_rounded, size: 14, color: Colors.white70), const SizedBox(width: 4), Flexible(child: Text(label, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w700)))])));
-
-  Widget _toolTray() => SizedBox(
-    height: 92,
-    child: ListView.separated(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 14),
-      scrollDirection: Axis.horizontal,
-      itemCount: _tools.length,
-      separatorBuilder: (_, __) => const SizedBox(width: 7),
-      itemBuilder: (context, index) {
-        final (icon, label) = _tools[index];
-        final selected = _tool == label;
-        return InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: () => setState(() => _tool = label),
-          child: Container(width: 70, decoration: BoxDecoration(color: selected ? const Color(0xFF30351F) : _panel, borderRadius: BorderRadius.circular(14), border: selected ? Border.all(color: _lime.withValues(alpha: .45)) : null), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icon, color: selected ? _lime : Colors.white70, size: 20), const SizedBox(height: 5), Text(label, style: TextStyle(fontSize: 10, color: selected ? _lime : Colors.white70))])),
-        );
-      },
-    ),
-  );
+  @override
+  Widget build(BuildContext context) => Container(height: 48, alignment: Alignment.centerLeft, padding: const EdgeInsets.symmetric(horizontal: 6), decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(6)), child: Text(label, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.white70)));
 }
